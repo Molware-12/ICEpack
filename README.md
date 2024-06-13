@@ -1,6 +1,6 @@
 # ICEpack
 
-IcePack is a comprehensive Python-based simulation tool designed to craft and send various types of network packets. This simulation is an educational project aimed at demonstrating how different network protocols function by constructing and transmitting packets manually. Understanding packet crafting is crucial for fields such as network security, penetration testing, and network diagnostics.
+IcePack is a comprehensive Python-based simulation tool designed to craft and send various types of network packets. This simulation is an educational project aimed at demonstrating how different network protocols function by constructing and transmitting packets manually using the python struct module. Understanding packet crafting is crucial for fields such as network security, penetration testing, and network diagnostics.
 
 ICMP Packets
 
