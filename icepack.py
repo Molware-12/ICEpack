@@ -285,7 +285,15 @@ Type:   Code:
     
     def dns(self, payload, num_of_packets, size, query, domain):
         """
-        (query): "A" for IPV4 and "AAAA" for IPV6.
+        (query): 
+        A (Address)	This record maps a domain name to an IPv4 address
+        AAAA (Ipv6 Address)	This record maps a domain name to an IPv6 address
+        CNAME (Canonical Name)	This record creates an alias for the domain name.
+        MX (Mail Exchange)	This record specifies the mail server responsible for receiving email messages on behalf of the domain.
+        NS (Name Server)	This specifies an authoritative name servers for a domain.
+        PTR (Pointer)	This is used in reverse queries to map an IP to a domain name
+        TXT (Text)	This is used to specify text associated with the domain
+        SOA (Start of Authority)	This contains administrative information about the zone
         (domains): Refers to the name of a website. e.g. google.com."""
 
         # Create a raw socket to construct the packet
@@ -350,17 +358,14 @@ Type:   Code:
 
     def mdns(self, payload, num_of_packets, size, domains: list, qtype: str):
         """
-        (qtype): A (IPv4 Address Record): 0x0001
-        NS (Name Server Record): 0x0002
-        CNAME (Canonical Name Record): 0x0005
-        SOA (Start of Authority Record): 0x0006
-        PTR (Pointer Record): 0x000C
-        MX (Mail Exchange Record): 0x000F
-        TXT (Text Record): 0x0010
-        AAAA (IPv6 Address Record): 0x001C
-        SRV (Service Locator Record): 0x0021
-        OPT (Option Record): 0x0029
-        ANY (Wildcard Query): 0x00FF
+        A (Address)	This record maps a domain name to an IPv4 address
+        AAAA (Ipv6 Address)	This record maps a domain name to an IPv6 address
+        CNAME (Canonical Name)	This record creates an alias for the domain name.
+        MX (Mail Exchange)	This record specifies the mail server responsible for receiving email messages on behalf of the domain.
+        NS (Name Server)	This specifies an authoritative name servers for a domain.
+        PTR (Pointer)	This is used in reverse queries to map an IP to a domain name
+        TXT (Text)	This is used to specify text associated with the domain
+        SOA (Start of Authority)	This contains administrative information about the zone
         """
 
         # Create a UDP socket
