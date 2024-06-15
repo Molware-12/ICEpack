@@ -126,7 +126,7 @@ Type:   Code:
         FIN (Finish): Bit 0 (1)
 
         """
-        s_ip = socket.gethostbyname(socket.gethostname())  # Replace with the source IP address
+        s_ip = self.spoofed_ip  # Replace with the source IP address
         tcp_dest_port = 80  # Example destination port (replace with your desired port)
         payload = bytes(payload, "utf-8") * size
 
