@@ -34,3 +34,8 @@ Penetration Testing: Simulating attacks to test the security posture of a networ
 Protocol Development: Creating and refining communication protocols for efficient and secure data transfer.
 
 Also, to actually know if these packets were being sent correctly, I would advise using wireshark to do so. You can download wireshark from their website here. https://www.wireshark.org/download.html. 
+
+Many times while running this code in a terminal it will require permissions. If you are using a Linux distribution, use the 'sudo' command along with the 'python3' command on the file. Like this: sudo python3 icepack.py 
+This will work only if the permissions of the file have the +x which means 'executable'.
+
+On a Windows system, if you run the cmd prompt as administrator and to run the command the only thing that is needed is the name of the file.
