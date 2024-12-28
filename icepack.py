@@ -429,3 +429,58 @@ Type:   Code:
         for _ in range(num_of_packets):
             sock.sendto(dns_packet, (dest_ip, d_port))
         print("Packets sent")
+
+    def arp(self, network_interface: str, opcode: int, src_mac: str, dest_mac: str, src_ip: str, target_ip: str):
+        """
+        Sends a custom ARP packet over a specified network interface.
+
+        Parameters:
+        - network_interface (str): The name of the network interface to use (e.g., "eth0").
+        - opcode (int): The ARP operation code (1 for request, 2 for reply).
+        - src_mac (str): The source MAC address in the format "XX:XX:XX:XX:XX:XX".
+        - dest_mac (str): The destination MAC address in the format "XX:XX:XX:XX:XX:XX".
+        - src_ip (str): The source IP address in dot-decimal notation (e.g., "192.168.1.1").
+        - target_ip (str): The target IP address in dot-decimal notation (e.g., "192.168.1.2").
+
+        Returns:
+        None
+
+        Sends the crafted ARP packet to the network using the specified parameters.
+        """
+        sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(0x0003))
+
+        sock.bind((network_interface, 0))
+        protocol = 0x0806
+        src_mac = bytes(int(b, 16) for b in src_mac.split(":"))
+        dest_mac = bytes(int(b, 16) for b in dest_mac.split(":"))
+
+        ethernet_frame = struct.pack(
+            "!6s6sH",
+            src_mac,
+            dest_mac,
+            protocol
+        )
+
+        htype = 0x0001
+        prototype = 0x0800
+        hsize = 0x06
+        protosize = 0x04
+        opcode = 0x02
+        src_ip = socket.inet_aton(src_ip)
+        target_ip = socket.inet_aton(target_ip)
+
+        arp_packet = struct.pack(
+        "!HHBBH6s4s6s4s",       # Format string
+        htype,                 # Hardware type (Ethernet)
+        prototype,                 # Protocol type (IPv4)
+        hsize,                      # Hardware size (MAC address size)
+        protosize,                      # Protocol size (IPv4 address size)
+        opcode,                 # Opcode (ARP request)
+        src_mac,  # Sender MAC address
+        src_ip,  # Sender IP address
+        b'\00' * 6,            # Target MAC address (all zeros for request)
+        target_ip    # Target IP address
+        )
+        packet = ethernet_frame + arp_packet
+        sock.send(packet)
+        print("Packet(s) sent.") 
